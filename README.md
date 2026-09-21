@@ -1,4 +1,4 @@
-﻿# mcp-telegram-bridge
+# mcp-telegram-bridge
 
 **Controlled Telegram channel bridge for any MCP host.**
 
@@ -162,9 +162,7 @@ Tests mock Telegram HTTP with `respx` / `httpx`; no live token required.
 
 Canonical name: `io.github.antonio-castellon/mcp-telegram-bridge`
 
-```html
 <!-- mcp-name: io.github.antonio-castellon/mcp-telegram-bridge -->
-``` 
 
 ## License
 
