@@ -1,4 +1,4 @@
-"""Safety classify + scrub tests."""
+﻿"""Safety classify + scrub tests."""
 
 from __future__ import annotations
 
@@ -46,13 +46,13 @@ def test_annotate_update_on_message():
 
 
 def test_scrub_outbound_redacts_env_and_shapes(monkeypatch):
-    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "1234567890:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw")
-    text = (
-        "token is 1234567890:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw "
-        "and ghp_abcdefghijklmnopqrstuvwxyz0123456789"
-    )
+    # Build fake shapes at runtime so GitHub secret scanning never sees literals.
+    fake_bot = f"{'1' * 10}:{('Z' * 35)}"
+    fake_gh = "ghp_" + ("a" * 36)
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", fake_bot)
+    text = f"token is {fake_bot} and {fake_gh}"
     scrubbed = safety.scrub_outbound(text)
-    assert "AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw" not in scrubbed
+    assert fake_bot not in scrubbed
     assert "ghp_" not in scrubbed
     assert "[REDACTED]" in scrubbed
 
