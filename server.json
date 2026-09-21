@@ -1,0 +1,23 @@
+﻿{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.antonio-castellon/mcp-telegram-bridge",
+  "title": "Telegram Bridge",
+  "description": "Controlled Telegram Bot API bridge for any MCP host (stdio). Always-on outbound scrubbing and chat allowlist; optional strict inbound classification.",
+  "repository": {
+    "url": "https://github.com/antonio-castellon/mcp-telegram-bridge",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "mcp-telegram-bridge",
+      "version": "0.1.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}
