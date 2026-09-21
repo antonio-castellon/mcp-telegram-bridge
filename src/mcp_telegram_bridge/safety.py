@@ -1,9 +1,4 @@
-"""Inbound classify + outbound scrub.
-
-Doctrine: secrets and adult content stay off the bridge. In-fiction quiz
-passwords ("the dungeon password is moonflower") remain allowed when they
-are distinguishable from real infrastructure credentials.
-"""
+"""Optional inbound classification and always-on outbound scrubbing."""
 
 from __future__ import annotations
 
@@ -70,6 +65,15 @@ _ENV_NAMES = (
     "ALLOWED_CHAT_IDS",
 )
 
+_ENV_ASSIGNMENT = re.compile(
+    r"(?im)(?<![A-Za-z0-9_])((?:export\s+)?[A-Z][A-Z0-9_]*(?:TOKEN|KEY|SECRET|PASSWORD|PASSWD|CREDENTIAL|WEBHOOK|PRIVATE|ADMIN|CHAT_IDS|WAKE_URL|WAKE_KEY)[A-Z0-9_]*)\s*=\s*([\"']?)([^\s\"']+)\2"
+)
+
+_WEBHOOK_URL = re.compile(
+    r"https?://[^\s]+(?:webhook|whsec_|hook)[^\s]*",
+    flags=re.I,
+)
+
 
 def classify_inbound(text: str) -> Kind:
     """Classify inbound user/agent-facing text."""
@@ -111,7 +115,7 @@ def _secret_values() -> list[str]:
     out: list[str] = []
     for name in _ENV_NAMES:
         val = (os.getenv(name) or "").strip()
-        if len(val) >= 8:
+        if len(val) >= 4:
             out.append(val)
     return out
 
@@ -125,12 +129,8 @@ def scrub_outbound(text: str) -> str:
         if val and val in scrubbed:
             scrubbed = scrubbed.replace(val, "[REDACTED]")
     scrubbed = _TOKENISH.sub("[REDACTED]", scrubbed)
-    scrubbed = re.sub(
-        r"https?://(?:grok\.com|api2\.cursor\.sh)/[^\s]+webhook[^\s]*",
-        "[REDACTED-URL]",
-        scrubbed,
-        flags=re.I,
-    )
+    scrubbed = _ENV_ASSIGNMENT.sub(r"\1=[REDACTED]", scrubbed)
+    scrubbed = _WEBHOOK_URL.sub("[REDACTED-URL]", scrubbed)
     return scrubbed
 
 

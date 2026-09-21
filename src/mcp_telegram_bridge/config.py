@@ -20,6 +20,14 @@ def _parse_chat_ids(raw: str | None) -> frozenset[int]:
     return frozenset(out)
 
 
+def _parse_bool(raw: str | None, *, default: bool = False) -> bool:
+    """Parse the small, explicit boolean vocabulary used by environment flags."""
+    text = (raw or "").strip().lower()
+    if not text:
+        return default
+    return text in {"1", "true", "yes", "on"}
+
+
 def _default_data_dir() -> Path:
     override = (os.getenv("MCP_TELEGRAM_DATA_DIR") or "").strip()
     if override:
@@ -36,6 +44,7 @@ class Settings:
     allowed_chat_ids: frozenset[int] = field(default_factory=frozenset)
     data_dir: Path = field(default_factory=_default_data_dir)
     api_base: str = "https://api.telegram.org"
+    safety_strict: bool = False
 
     @property
     def has_chat_filter(self) -> bool:
@@ -57,6 +66,7 @@ class Settings:
         return cls(
             bot_token=token,
             allowed_chat_ids=_parse_chat_ids(os.getenv("ALLOWED_CHAT_IDS")),
+            safety_strict=_parse_bool(os.getenv("SAFETY_STRICT")),
             data_dir=_default_data_dir(),
         )
 

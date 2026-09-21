@@ -1,30 +1,27 @@
-# Safety (read before you deploy)
+# Connector safety
 
-`mcp-telegram-bridge` is a **controlled channel bridge**: Bot API I/O plus a baseline of inbound classification and outbound scrubbing. The MCP host agent still owns product policy; this module enforces a hard floor so a forgotten prompt cannot leak `.env` into a group.
+`mcp-telegram-bridge` is a narrow Telegram connector. Its threat model is accidental disclosure through an agent or a misconfigured deployment: credentials, internal identifiers, and traffic sent to the wrong chat. The bridge is not a content moderation system, DLP product, or substitute for Telegram account and host security.
 
-Keep these rules when you fork. Extend the deny lists; do not remove the scrubber.
+## Always-on hygiene
 
-## Never publish on Telegram through this bridge
+### Outbound scrubbing
 
-- Passwords, bot tokens, API keys, webhook URLs/keys, `.env` contents
-- Admin Telegram ids, allowed-chat lists, machine paths, internal hostnames
-- Anything that would help someone break into *your* (or a user's) accounts
+All text sent through the bridge is scrubbed for configured environment values, common token shapes, secret-like environment assignments, and webhook URLs. This applies to message text, callback toasts, and button labels/ids. Scrubbing is a last-resort control, not permission to place secrets in prompts or logs. Do not put credentials in the repository, MCP configuration checked into source control, or Telegram messages.
 
-In-fiction quiz answers remain allowed when they are distinguishable from real credentials ("the password to the dungeon door is *moonflower*"). That is content, not infrastructure.
+### Chat allowlist
 
-## Content
+Set `ALLOWED_CHAT_IDS` to a comma-separated list of approved Telegram chat ids in deployments that should have bounded destinations. When set, send, edit, and chat-metadata tools reject other ids, and `telegram_get_updates` removes content from updates that are outside the list (or have no identifiable chat). An empty value disables this additional destination filter, so use it only when that exposure is intentional.
 
-- No pornography, nudity, or XXX / erotic content on the bridge
-- No sexual content involving minors — ever (refuse and stop)
+### Token handling
 
-## Code hooks (do not remove casually)
+Keep `TELEGRAM_BOT_TOKEN` and other credentials in a local, permission-restricted `.env` or secret manager. Never commit `.env`, real chat ids, tokens, webhook keys, or internal host details. Rotate a token immediately if it is exposed.
 
-| Hook | Role |
-|---|---|
-| `safety.classify_inbound` / `annotate_update` | Flags secret/adult asks on `telegram_get_updates` with `safety.blocked` + `warning` (never silent drop) |
-| `safety.scrub_outbound` | Redacts env secret values and token-shaped strings on send / callback toasts |
-| `ALLOWED_CHAT_IDS` | Optional allow-list; empty means no extra chat filter (document that risk) |
+## Optional strict inbound classification
 
-## Ops tip
+Set `SAFETY_STRICT=1` (also `true`, `yes`, or `on`) to classify inbound update text for credential fishing involving passwords, tokens, webhooks, admin internals, and for NSFW content. In strict mode, `telegram_get_updates` adds `safety.kind`, `safety.blocked`, and `safety.warning` fields; flagged updates remain visible so the MCP host can decide how to handle them.
 
-Keep real ids and tokens only in local `.env` (gitignored). Public docs and this repository use placeholders only.
+Strict mode is **off by default**. With it off, the classifier is not run and updates are returned without secret/NSFW blocking fields. Always-on scrubbing and the chat allowlist still apply. Enable strict mode for public or otherwise untrusted groups when the additional heuristic signal is useful, and treat it as advisory rather than a complete filter.
+
+## Operational responsibility
+
+The MCP host owns conversation and product policy. Review prompts, logs, button data, and deployment permissions; use HTTPS and a restricted runtime; and keep human approval for irreversible Telegram administration.

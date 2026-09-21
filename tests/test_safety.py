@@ -57,6 +57,15 @@ def test_scrub_outbound_redacts_env_and_shapes(monkeypatch):
     assert "[REDACTED]" in scrubbed
 
 
+def test_scrub_outbound_redacts_env_like_assignments():
+    scrubbed = safety.scrub_outbound(
+        "TELEGRAM_BOT_TOKEN=plain-secret and WEBHOOK_URL=https://example.test/webhook/key"
+    )
+    assert "plain-secret" not in scrubbed
+    assert "webhook/key" not in scrubbed
+    assert "TELEGRAM_BOT_TOKEN=[REDACTED]" in scrubbed
+
+
 def test_refusal_languages():
     assert "password" in safety.refusal("secrets", "en").lower() or "token" in safety.refusal(
         "secrets", "en"

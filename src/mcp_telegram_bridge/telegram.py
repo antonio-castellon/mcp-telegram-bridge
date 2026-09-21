@@ -7,6 +7,7 @@ from typing import Any
 import httpx
 
 from .config import Settings
+from .safety import scrub_outbound
 
 
 class TelegramError(RuntimeError):
@@ -37,7 +38,12 @@ class TelegramClient:
 
     async def call(self, method: str, payload: dict[str, Any] | None = None) -> Any:
         url = f"{self.base_url}/{method}"
-        response = await self._client.post(url, json=payload or {})
+        safe_payload = dict(payload or {})
+        if method in {"sendMessage", "answerCallbackQuery"}:
+            value = safe_payload.get("text")
+            if isinstance(value, str):
+                safe_payload["text"] = scrub_outbound(value)
+        response = await self._client.post(url, json=safe_payload)
         response.raise_for_status()
         data = response.json()
         if not data.get("ok"):
@@ -63,7 +69,7 @@ class TelegramClient:
         reply_markup: dict[str, Any] | None = None,
         disable_web_page_preview: bool | None = True,
     ) -> Any:
-        payload: dict[str, Any] = {"chat_id": chat_id, "text": text}
+        payload: dict[str, Any] = {"chat_id": chat_id, "text": scrub_outbound(text or "")}
         if parse_mode:
             payload["parse_mode"] = parse_mode
         if reply_markup is not None:
@@ -96,7 +102,7 @@ class TelegramClient:
     ) -> Any:
         payload: dict[str, Any] = {"callback_query_id": callback_query_id}
         if text:
-            payload["text"] = text
+            payload["text"] = scrub_outbound(text)
         if show_alert:
             payload["show_alert"] = True
         return await self.call("answerCallbackQuery", payload)

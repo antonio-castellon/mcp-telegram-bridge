@@ -15,7 +15,9 @@ from .telegram import TelegramClient
 INSTRUCTIONS = """\
 Controlled Telegram channel bridge (stdio MCP).
 
-This server only does Bot API I/O plus inbound classify / outbound scrub.
+This server only does Bot API I/O plus always-on outbound scrubbing and
+allow-list enforcement. Optional strict inbound classification is controlled
+by SAFETY_STRICT.
 The MCP host agent owns conversation logic, polling loops, and product rules.
 Games / GM flows are one demo use case — not the product.
 
@@ -84,6 +86,16 @@ def create_server(settings: Settings | None = None) -> FastMCP:
             raw_buttons = [
                 b.model_dump() if isinstance(b, BaseModel) else dict(b) for b in buttons
             ]
+            raw_buttons = [
+                {
+                    **button,
+                    "id": safety.scrub_outbound(str(button.get("id") or "")),
+                    "label": safety.scrub_outbound(
+                        str(button.get("label") or button.get("text") or "")
+                    ),
+                }
+                for button in raw_buttons
+            ]
             normalized = btn.normalize_buttons(raw_buttons)
             reply_markup = btn.build_inline_keyboard(
                 normalized,
@@ -124,6 +136,16 @@ def create_server(settings: Settings | None = None) -> FastMCP:
             raw_buttons = [
                 b.model_dump() if isinstance(b, BaseModel) else dict(b) for b in buttons
             ]
+            raw_buttons = [
+                {
+                    **button,
+                    "id": safety.scrub_outbound(str(button.get("id") or "")),
+                    "label": safety.scrub_outbound(
+                        str(button.get("label") or button.get("text") or "")
+                    ),
+                }
+                for button in raw_buttons
+            ]
             normalized = btn.normalize_buttons(raw_buttons)
             reply_markup = btn.build_inline_keyboard(
                 normalized,
@@ -159,8 +181,9 @@ def create_server(settings: Settings | None = None) -> FastMCP:
         name="telegram_get_updates",
         description=(
             "Long-poll getUpdates. The agent owns the offset loop. "
-            "Each update is annotated with safety.{kind,blocked,warning}; "
-            "dangerous inbound is flagged, not silently dropped."
+            "When SAFETY_STRICT is enabled, each update is annotated with "
+            "safety.{kind,blocked,warning}; otherwise inbound text is returned "
+            "unchanged and is not classified."
         ),
     )
     async def telegram_get_updates(
@@ -180,21 +203,33 @@ def create_server(settings: Settings | None = None) -> FastMCP:
         for item in raw or []:
             if not isinstance(item, dict):
                 continue
-            # Optional allow-list filter on chat ids
+            # Allow-list filtering is always enforced when configured. Do not
+            # expose message content from a chat that cannot be identified or
+            # is not explicitly allowed.
             chat_id = _extract_chat_id(item)
-            if chat_id is not None and not cfg.chat_allowed(chat_id):
+            disallowed = cfg.has_chat_filter and (
+                chat_id is None or not cfg.chat_allowed(chat_id)
+            )
+            if disallowed:
+                reason = (
+                    "chat_id unavailable; ALLOWED_CHAT_IDS is configured"
+                    if chat_id is None
+                    else f"chat_id {chat_id} not in ALLOWED_CHAT_IDS"
+                )
                 annotated = {
                     "update_id": item.get("update_id"),
-                    "safety": {
-                        "kind": "secrets",
-                        "blocked": True,
-                        "warning": f"chat_id {chat_id} not in ALLOWED_CHAT_IDS",
-                    },
                     "filtered": True,
+                    "filter_reason": reason,
                 }
+                if cfg.safety_strict:
+                    annotated["safety"] = {
+                        "kind": "policy",
+                        "blocked": True,
+                        "warning": reason,
+                    }
                 updates.append(annotated)
                 continue
-            annotated = safety.annotate_update(item)
+            annotated = safety.annotate_update(item) if cfg.safety_strict else dict(item)
             # Resolve mapped callback ids for the agent
             cq = annotated.get("callback_query")
             if isinstance(cq, dict) and cq.get("data") and chat_id is not None:

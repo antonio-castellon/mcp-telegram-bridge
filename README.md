@@ -2,7 +2,7 @@
 
 **Controlled Telegram channel bridge for any MCP host.**
 
-A small stdio [Model Context Protocol](https://modelcontextprotocol.io/) server that sits between your local agent (Cursor, Claude Desktop, Windsurf, Grok/Cursor agents, and others) and the Telegram Bot API. The agent owns conversation logic; this process only does I/O plus a baseline of inbound safety classification and outbound secret scrubbing.
+A small stdio [Model Context Protocol](https://modelcontextprotocol.io/) server that sits between your local agent (Cursor, Claude Desktop, Windsurf, Grok/Cursor agents, and others) and the Telegram Bot API. The agent owns conversation logic; this process handles I/O, always-on outbound scrubbing, and chat allowlist enforcement. Optional strict inbound classification is disabled by default.
 
 Built for client-owned deployments — the bridge runs on **your machine**, not on a hosted Grok VM. Games and game-master flows are one demo use case, not the product.
 
@@ -14,7 +14,7 @@ Agents are good at reasoning and poor at holding a raw Bot API session by themse
 
 - **Client-owned** — stdio MCP on the workstation or CI runner that already hosts your agent.
 - **Host-agnostic** — any MCP client that can launch a local command.
-- **Controlled** — optional `ALLOWED_CHAT_IDS`, outbound scrubbing, inbound `blocked` / `warning` flags (no silent drops).
+- **Controlled** — outbound scrubbing and optional `ALLOWED_CHAT_IDS`; optional strict inbound classification for untrusted groups.
 - **Minimal tools** — send, edit markup, answer callbacks, get updates, getMe / getChat. No game engine, no inbox file, no wake-RPC.
 
 Pitch pattern for SMEs: start with a Telegram notify or triage channel using the same architecture you would later apply to email or ERP.
@@ -41,7 +41,7 @@ Pitch pattern for SMEs: start with a Telegram notify or triage channel using the
          Telegram chats / groups
 ```
 
-The **agent** owns polling offsets, handoffs between specialists, and product policy. This server returns annotated updates and sends scrubbed text.
+The **agent** owns polling offsets, handoffs between specialists, and product policy. This server enforces destination controls and sends scrubbed text; inbound classification is opt-in.
 
 ## Install
 
@@ -107,7 +107,7 @@ python -m mcp_telegram_bridge
 | `telegram_get_updates` | `offset`, `limit`, `timeout` — returns messages + callback_queries; **agent owns the loop** |
 | `telegram_get_chat` | Chat metadata |
 
-Outbound text is always passed through `scrub_outbound`. Inbound updates from `telegram_get_updates` carry a `safety` object (`kind`, `blocked`, `warning`) when content looks like credential fishing or NSFW — the agent is told, not left guessing.
+Outbound text is always scrubbed. `ALLOWED_CHAT_IDS` restricts destinations when configured. `telegram_get_updates` runs the heuristic secret/NSFW classifier only when `SAFETY_STRICT=1` (or `true`/`yes`/`on`); strict mode is optional and recommended for public or untrusted groups.
 
 ## Usage guide
 
@@ -149,7 +149,7 @@ Optional context only — this project does **not** require them:
 
 ## Safety
 
-See **[SAFETY.md](SAFETY.md)**. Do not put secrets in the repository. Prefer `ALLOWED_CHAT_IDS` in production-like setups.
+See **[SAFETY.md](SAFETY.md)** for the threat model, always-on scrubbing and allowlist controls, token handling, and optional strict mode. Do not put secrets in the repository; prefer `ALLOWED_CHAT_IDS` in production-like setups.
 
 ## Development
 
