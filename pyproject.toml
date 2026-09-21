@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcp-telegram-bridge"
+version = "0.1.0"
+description = "Stdio MCP server: controlled Telegram Bot API bridge for any MCP host."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+authors = [
+  { name = "Antonio Castellon", email = "hello@castellon.ch" },
+]
+keywords = ["mcp", "telegram", "bot", "stdio", "bridge"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Communications :: Chat",
+]
+dependencies = [
+  "mcp>=1.9.0,<2",
+  "httpx>=0.27.0,<1",
+  "pydantic>=2.7.0,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "pytest-asyncio>=0.24",
+  "respx>=0.21",
+]
+
+[project.scripts]
+mcp-telegram-bridge = "mcp_telegram_bridge.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/antonio-castellon/mcp-telegram-bridge"
+Issues = "https://github.com/antonio-castellon/mcp-telegram-bridge/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["src"]
