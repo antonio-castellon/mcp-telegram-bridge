@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "telegram-bridge": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "mcp-telegram-bridge",
+        "mcp-telegram-bridge"
+      ],
+      "env": {
+        "TELEGRAM_BOT_TOKEN": "${TELEGRAM_BOT_TOKEN}",
+        "ALLOWED_CHAT_IDS": "${ALLOWED_CHAT_IDS}",
+        "SAFETY_STRICT": "${SAFETY_STRICT}"
+      }
+    }
+  }
+}

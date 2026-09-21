@@ -1,0 +1,44 @@
+{
+  "name": "mcp-telegram-bridge",
+  "version": "0.1.0",
+  "description": "Controlled stdio MCP bridge to the Telegram Bot API with outbound scrubbing and optional chat allowlisting.",
+  "author": {
+    "name": "antonio-castellon"
+  },
+  "homepage": "https://github.com/antonio-castellon/mcp-telegram-bridge",
+  "repository": "https://github.com/antonio-castellon/mcp-telegram-bridge",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "telegram",
+    "bot",
+    "stdio",
+    "bridge",
+    "safety"
+  ],
+  "variables": {
+    "type": "object",
+    "properties": {
+      "TELEGRAM_BOT_TOKEN": {
+        "type": "string",
+        "title": "Telegram bot token",
+        "description": "Required token created with Telegram BotFather."
+      },
+      "ALLOWED_CHAT_IDS": {
+        "type": "string",
+        "title": "Allowed chat IDs",
+        "description": "Optional comma-separated Telegram chat IDs. Leave blank to allow all chats visible to the bot.",
+        "default": ""
+      },
+      "SAFETY_STRICT": {
+        "type": "string",
+        "title": "Strict safety mode",
+        "description": "Optional flag; use 1, true, yes, or on to enable strict inbound classification.",
+        "default": ""
+      }
+    },
+    "required": [
+      "TELEGRAM_BOT_TOKEN"
+    ]
+  }
+}
