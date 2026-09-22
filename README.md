@@ -152,7 +152,7 @@ Optional context only - this project does **not** require them:
 
 ## Safety
 
-See **[SAFETY.md](SAFETY.md)** for the threat model, always-on scrubbing and allowlist controls, token handling, and optional strict mode. Do not put secrets in the repository; prefer `ALLOWED_CHAT_IDS` in production-like setups.
+See **[SAFETY.md](SAFETY.md)** for the threat model, always-on scrubbing and allowlist controls, token handling, optional strict mode, and button-map data dir (`MCP_TELEGRAM_BRIDGE_DATA_DIR`, modes `0700`/`0600`). Do not put secrets in the repository; prefer `ALLOWED_CHAT_IDS` in production-like setups.
 
 ## Development
 

@@ -2,6 +2,10 @@
 
 `mcp-telegram-bridge` is a narrow Telegram connector. Its threat model is accidental disclosure through an agent or a misconfigured deployment: credentials, internal identifiers, and traffic sent to the wrong chat. The bridge is not a content moderation system, DLP product, or substitute for Telegram account and host security.
 
+## Transport and package posture
+
+This server is **stdio-only** (launched by a local MCP host). It does not expose an HTTP/SSE/WebSocket MCP transport. Runtime dependency pin: `mcp>=1.27.2,<2` (clears CVE-2025-66416, CVE-2026-52869, CVE-2026-52870 ranges commonly flagged by scanners). We do not claim PyPI provenance attestation beyond what the published package and repository themselves provide; treat marketplace "PyPI verified" notes as informational for this stdio connector.
+
 ## Always-on hygiene
 
 ### Outbound scrubbing
@@ -15,6 +19,16 @@ Set `ALLOWED_CHAT_IDS` to a comma-separated list of approved Telegram chat ids i
 ### Token handling
 
 Keep `TELEGRAM_BOT_TOKEN` and other credentials in a local, permission-restricted `.env` or secret manager. Never commit `.env`, real chat ids, tokens, webhook keys, or internal host details. Rotate a token immediately if it is exposed.
+
+### Button-map / claim data directory
+
+Inline-button id mapping and `claim_message_tap` state are stored under a local data directory:
+
+1. `MCP_TELEGRAM_BRIDGE_DATA_DIR` if set (preferred)
+2. Legacy `MCP_TELEGRAM_DATA_DIR` if set
+3. Otherwise a per-user data path (`platformdirs` when installed, else `$XDG_DATA_HOME` / `~/.local/share/mcp-telegram-bridge`, with `$XDG_CACHE_HOME` / `~/.cache` as a fallback)
+
+The bridge creates that directory with mode `0o700` and writes state files with mode `0o600` when the filesystem honors POSIX modes (best-effort on Windows). Keep this directory on a local disk you control; do not point it at a shared or world-writable location.
 
 ## Optional strict inbound classification
 

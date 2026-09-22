@@ -29,11 +29,32 @@ def _parse_bool(raw: str | None, *, default: bool = False) -> bool:
 
 
 def _default_data_dir() -> Path:
-    override = (os.getenv("MCP_TELEGRAM_DATA_DIR") or "").strip()
-    if override:
-        return Path(override).expanduser()
-    base = Path(os.getenv("XDG_CACHE_HOME") or (Path.home() / ".cache"))
-    return base / "mcp-telegram-bridge"
+    """Resolve button-map / claim state directory.
+
+    Preference order:
+    1. ``MCP_TELEGRAM_BRIDGE_DATA_DIR`` (documented)
+    2. ``MCP_TELEGRAM_DATA_DIR`` (legacy alias)
+    3. platformdirs user_data_dir when available
+    4. ``$XDG_DATA_HOME/mcp-telegram-bridge`` or ``~/.local/share/...``
+       (cache fallback: ``$XDG_CACHE_HOME`` / ``~/.cache``)
+    """
+    for key in ("MCP_TELEGRAM_BRIDGE_DATA_DIR", "MCP_TELEGRAM_DATA_DIR"):
+        override = (os.getenv(key) or "").strip()
+        if override:
+            return Path(override).expanduser()
+    try:
+        from platformdirs import user_data_dir  # type: ignore[import-not-found]
+
+        return Path(user_data_dir("mcp-telegram-bridge", appauthor=False))
+    except ImportError:
+        pass
+    xdg_data = (os.getenv("XDG_DATA_HOME") or "").strip()
+    if xdg_data:
+        return Path(xdg_data).expanduser() / "mcp-telegram-bridge"
+    xdg_cache = (os.getenv("XDG_CACHE_HOME") or "").strip()
+    if xdg_cache:
+        return Path(xdg_cache).expanduser() / "mcp-telegram-bridge"
+    return Path.home() / ".local" / "share" / "mcp-telegram-bridge"
 
 
 @dataclass(frozen=True)
