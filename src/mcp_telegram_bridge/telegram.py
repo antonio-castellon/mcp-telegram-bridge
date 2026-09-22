@@ -20,7 +20,7 @@ def _safe_error_body(response: httpx.Response) -> str:
         return ""
     text = text.replace("\n", " ").strip()
     if len(text) > _ERROR_BODY_MAX:
-        text = text[:_ERROR_BODY_MAX] + "\u2026"
+        text = text[:_ERROR_BODY_MAX] + "..."
     return text
 
 
@@ -85,11 +85,11 @@ class TelegramClient:
         return data.get("result")
 
     async def get_me(self) -> Any:
-        """Return the bot identity from ``getMe"."""
+        """Return the bot identity from ``getMe``."""
         return await self.call("getMe")
 
     async def get_chat(self, chat_id: int | str) -> Any:
-        """Return chat metadata from ``getChat"."""
+        """Return chat metadata from ``getChat``."""
         return await self.call("getChat", {"chat_id": chat_id})
 
     async def send_message(
@@ -118,7 +118,7 @@ class TelegramClient:
         *,
         reply_markup: dict[str, Any] | None = None,
     ) -> Any:
-        """Replace or clear inline markup via ``editMessageReplyMarkup"."""
+        """Replace or clear inline markup via ``editMessageReplyMarkup``."""
         payload: dict[str, Any] = {
             "chat_id": chat_id,
             "message_id": message_id,
