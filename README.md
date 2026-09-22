@@ -167,7 +167,9 @@ Tests mock Telegram HTTP with `respx` / `httpx`; no live token required.
 
 Canonical name: `io.github.antonio-castellon/mcp-telegram-bridge`
 
-Also listed on [mcpservers.org](https://mcpservers.org/servers/antonio-castellon/mcp-telegram-bridge).
+Also listed on [mcpservers.org](https://mcpservers.org/servers/antonio-castellon/mcp-telegram-bridge) and [MCP Marketplace](https://mcp-marketplace.io/server/io-github-antonio-castellon-mcp-telegram-bridge).
+
+For marketplace listing autofill, see **[LAUNCHGUIDE.md](LAUNCHGUIDE.md)** (tagline, setup env vars, category, use cases, and example prompts).
 
 <!-- mcp-name: io.github.antonio-castellon/mcp-telegram-bridge -->
 
