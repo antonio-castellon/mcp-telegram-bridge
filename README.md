@@ -1,5 +1,7 @@
 # mcp-telegram-bridge
 
+[![Listed on mcpservers.org](https://mcpservers.org/badge.svg)](https://mcpservers.org/servers/antonio-castellon/mcp-telegram-bridge)
+
 **Controlled Telegram channel bridge for any MCP host.**
 
 A small stdio [Model Context Protocol](https://modelcontextprotocol.io/) server that sits between your local agent (Cursor, Claude Desktop, Windsurf, Grok/Cursor agents, and others) and the Telegram Bot API. The agent owns conversation logic; this process handles I/O, always-on outbound scrubbing, and chat allowlist enforcement. Optional strict inbound classification is disabled by default.
@@ -164,6 +166,8 @@ Tests mock Telegram HTTP with `respx` / `httpx`; no live token required.
 ## MCP Registry
 
 Canonical name: `io.github.antonio-castellon/mcp-telegram-bridge`
+
+Also listed on [mcpservers.org](https://mcpservers.org/servers/antonio-castellon/mcp-telegram-bridge).
 
 <!-- mcp-name: io.github.antonio-castellon/mcp-telegram-bridge -->
 
