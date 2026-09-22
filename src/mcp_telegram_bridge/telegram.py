@@ -9,6 +9,20 @@ import httpx
 from .config import Settings
 from .safety import scrub_outbound
 
+_ERROR_BODY_MAX = 200
+
+
+def _safe_error_body(response: httpx.Response) -> str:
+    """Return a truncated response body safe for logs (never include bot token)."""
+    try:
+        text = response.text or ""
+    except (OSError, UnicodeError, ValueError):
+        return ""
+    text = text.replace("\n", " ").strip()
+    if len(text) > _ERROR_BODY_MAX:
+        text = text[:_ERROR_BODY_MAX] + "\u2026"
+    return text
+
 
 class TelegramError(RuntimeError):
     """Raised when the Bot API returns ok=false or HTTP failure."""
@@ -30,13 +44,20 @@ class TelegramClient:
 
     @property
     def base_url(self) -> str:
+        """Bot API base URL including the token path segment (not for logging)."""
         return f"{self.settings.api_base.rstrip('/')}/bot{self.settings.bot_token}"
 
     async def aclose(self) -> None:
+        """Close the owned httpx client when this wrapper created it."""
         if self._owns_client:
             await self._client.aclose()
 
     async def call(self, method: str, payload: dict[str, Any] | None = None) -> Any:
+        """POST ``method`` to the Bot API and return the ``result`` field.
+
+        On HTTP failure, raises ``TelegramError`` with method, status, and a
+        truncated body. The bot token is never included in the error message.
+        """
         url = f"{self.base_url}/{method}"
         safe_payload = dict(payload or {})
         if method in {"sendMessage", "answerCallbackQuery"}:
@@ -44,7 +65,16 @@ class TelegramClient:
             if isinstance(value, str):
                 safe_payload["text"] = scrub_outbound(value)
         response = await self._client.post(url, json=safe_payload)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except httpx.HTTPStatusError as exc:
+            status = exc.response.status_code if exc.response is not None else None
+            body = _safe_error_body(exc.response) if exc.response is not None else ""
+            raise TelegramError(
+                method,
+                f"HTTP {status}: {body}" if body else f"HTTP {status}",
+                error_code=status,
+            ) from None
         data = response.json()
         if not data.get("ok"):
             raise TelegramError(
@@ -55,9 +85,11 @@ class TelegramClient:
         return data.get("result")
 
     async def get_me(self) -> Any:
+        """Return the bot identity from ``getMe"."""
         return await self.call("getMe")
 
     async def get_chat(self, chat_id: int | str) -> Any:
+        """Return chat metadata from ``getChat"."""
         return await self.call("getChat", {"chat_id": chat_id})
 
     async def send_message(
@@ -69,6 +101,7 @@ class TelegramClient:
         reply_markup: dict[str, Any] | None = None,
         disable_web_page_preview: bool | None = True,
     ) -> Any:
+        """Send scrubbed text via ``sendMessage`` (optional inline keyboard)."""
         payload: dict[str, Any] = {"chat_id": chat_id, "text": scrub_outbound(text or "")}
         if parse_mode:
             payload["parse_mode"] = parse_mode
@@ -85,6 +118,7 @@ class TelegramClient:
         *,
         reply_markup: dict[str, Any] | None = None,
     ) -> Any:
+        """Replace or clear inline markup via ``editMessageReplyMarkup"."""
         payload: dict[str, Any] = {
             "chat_id": chat_id,
             "message_id": message_id,
@@ -100,6 +134,7 @@ class TelegramClient:
         text: str | None = None,
         show_alert: bool = False,
     ) -> Any:
+        """Acknowledge a callback query (optional scrubbed toast)."""
         payload: dict[str, Any] = {"callback_query_id": callback_query_id}
         if text:
             payload["text"] = scrub_outbound(text)
@@ -115,6 +150,7 @@ class TelegramClient:
         timeout: int | None = None,
         allowed_updates: list[str] | None = None,
     ) -> Any:
+        """Long-poll Telegram updates; the MCP host owns the offset loop."""
         payload: dict[str, Any] = {}
         if offset is not None:
             payload["offset"] = offset
