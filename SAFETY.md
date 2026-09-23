@@ -4,7 +4,7 @@
 
 ## Transport and package posture
 
-This server is **stdio-only** (launched by a local MCP host). It does not expose an HTTP/SSE/WebSocket MCP transport. Runtime dependency pin: `mcp>=1.27.2,<2` (clears CVE-2025-66416, CVE-2026-52869, CVE-2026-52870 ranges commonly flagged by scanners). We do not claim PyPI provenance attestation beyond what the published package and repository themselves provide; treat marketplace "PyPI verified" notes as informational for this stdio connector.
+This server is **stdio-only** (launched by a local MCP host). It does not expose an HTTP/SSE/WebSocket MCP transport. Runtime dependency pin: `mcp>=1.28.1,<2` (clears CVE-2025-66416, CVE-2026-52869, CVE-2026-52870, and CVE-2026-59950 / GHSA-vj7q-gjh5-988w WebSocket Host/Origin validation � fixed in mcp 1.28.1+. This bridge does not use websocket_server; the pin still clears marketplace supply-chain scanners). We do not claim PyPI provenance attestation beyond what the published package and repository themselves provide; treat marketplace "PyPI verified" notes as informational for this stdio connector.
 
 ## Always-on hygiene
 
