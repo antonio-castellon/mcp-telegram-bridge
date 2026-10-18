@@ -138,7 +138,7 @@ Same shape as an email or ERP connector: narrow tools, allow-listed destinations
 
 This MCP server pairs naturally with a companion **SKILL.md** (the open agent skills format used by Claude Code, Cursor, Codex CLI, and 20+ other agents). The skill teaches the agent when and how to use the tools, the safety controls (scrubbing, allowlist, optional strict mode), and that the agent owns the `telegram_get_updates` offset loop.
 
-A ready-to-use SKILL.md example is available in the conversation history or can be generated for listing on marketplaces such as Agensi.io (non-exclusive, free to list, 70% creator share). The MCP server itself remains the I/O + safety layer; the skill is pure instructions.
+Agent skill: [Telegram Bridge on Agensi](https://www.agensi.io/skills/telegram-bridge), a ready-made SKILL.md that teaches agents to use this server. The MCP server itself remains the I/O + safety layer; the skill is pure instructions.
 
 ## What this is NOT
 
@@ -173,7 +173,7 @@ Tests mock Telegram HTTP with `respx` / `httpx`; no live token required.
 
 Canonical name: `io.github.antonio-castellon/mcp-telegram-bridge`
 
-Also listed on [mcpservers.org](https://mcpservers.org/servers/antonio-castellon/mcp-telegram-bridge) and [MCP Marketplace](https://mcp-marketplace.io/server/io-github-antonio-castellon-mcp-telegram-bridge).
+Also listed on [mcpservers.org](https://mcpservers.org/servers/antonio-castellon/mcp-telegram-bridge), [MCP Marketplace](https://mcp-marketplace.io/server/io-github-antonio-castellon-mcp-telegram-bridge), and (as a companion agent skill) [Agensi](https://www.agensi.io/skills/telegram-bridge).
 
 For marketplace listing autofill, see **[LAUNCHGUIDE.md](LAUNCHGUIDE.md)** (tagline, setup env vars, category, use cases, and example prompts).
 
