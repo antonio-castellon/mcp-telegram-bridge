@@ -134,6 +134,12 @@ Draft replies and suggest actions. **Humans still own ban / restrict / delete** 
 
 Same shape as an email or ERP connector: narrow tools, allow-listed destinations, scrubbed egress, explicit inbound warnings. Telegram is the demo channel; swap the transport later without rewriting agent policy.
 
+## Agent Skills
+
+This MCP server pairs naturally with a companion **SKILL.md** (the open agent skills format used by Claude Code, Cursor, Codex CLI, and 20+ other agents). The skill teaches the agent when and how to use the tools, the safety controls (scrubbing, allowlist, optional strict mode), and that the agent owns the `telegram_get_updates` offset loop.
+
+A ready-to-use SKILL.md example is available in the conversation history or can be generated for listing on marketplaces such as Agensi.io (non-exclusive, free to list, 70% creator share). The MCP server itself remains the I/O + safety layer; the skill is pure instructions.
+
 ## What this is NOT
 
 - Not a hosted bot SaaS or multi-tenant cloud bridge
