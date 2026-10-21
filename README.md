@@ -1,3 +1,12 @@
+<p>
+  <a href="https://github.com/antonio-castellon/mcp-telegram-bridge/releases/latest"><img src="https://img.shields.io/github/v/release/antonio-castellon/mcp-telegram-bridge" alt="Latest GitHub release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license"></a>
+  <img src="https://img.shields.io/pypi/pyversions/mcp-telegram-bridge" alt="Python versions">
+  <a href="https://modelcontextprotocol.io/"><img src="https://img.shields.io/badge/MCP-stdio-111827" alt="MCP stdio"></a>
+</p>
+
+![mcp-telegram-bridge](https://raw.githubusercontent.com/antonio-castellon/mcp-telegram-bridge/main/docs/images/banner.png)
+
 # mcp-telegram-bridge
 
 [![Listed on mcpservers.org](https://mcpservers.org/badge.svg)](https://mcpservers.org/servers/antonio-castellon/mcp-telegram-bridge)

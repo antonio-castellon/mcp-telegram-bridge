@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320" role="img" aria-labelledby="title desc">
+  <title id="title">mcp-telegram-bridge</title>
+  <desc id="desc">Controlled Telegram channel bridge for any MCP host (stdio).</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0E141C"/>
+      <stop offset="0.55" stop-color="#141C27"/>
+      <stop offset="1" stop-color="#1A2836"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.78" cy="0.48" r="0.42">
+      <stop offset="0" stop-color="#3D6B62" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#3D6B62" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="brass" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#F0D7AE"/>
+      <stop offset="1" stop-color="#C4A36A"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="320" fill="url(#bg)"/>
+  <rect width="1280" height="320" fill="url(#glow)"/>
+  <path d="M48 128 V198" fill="none" stroke="url(#brass)" stroke-width="2" stroke-linecap="round"/>
+  <text x="72" y="152" fill="#F4F0E8" font-family="Inter, Liberation Sans, Noto Sans, sans-serif" font-size="48" font-weight="600" letter-spacing="-0.6">mcp-telegram-bridge</text>
+  <text x="72" y="196" fill="#C5D0DA" font-family="Inter, Liberation Sans, Noto Sans, sans-serif" font-size="22" font-weight="400">Controlled Telegram channel bridge for any MCP host (stdio).</text>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="828" y="112" width="72" height="96" rx="12" fill="#121A24" stroke="#E4C99A" stroke-width="1.75"/>
+    <path d="M848 152 L864 160 L848 168" stroke="#9ECCC2" stroke-width="2.4"/>
+    <path d="M868 168 H882" stroke="#9ECCC2" stroke-width="2.4"/>
+    <path d="M900 160 H1104" stroke="url(#brass)" stroke-width="3.5"/>
+    <path d="M912 160 Q1008 74 1104 160" stroke="#E4C99A" stroke-width="2.5"/>
+    <path d="M912 160 Q1008 118 1104 160" stroke="#8AA0B2" stroke-width="1.25" stroke-opacity="0.8"/>
+    <path d="M960 127.75 V160" stroke="#8AA0B2" stroke-width="1.25" stroke-opacity="0.85"/>
+    <path d="M1008 117 V160" stroke="#8AA0B2" stroke-width="1.25" stroke-opacity="0.85"/>
+    <path d="M1056 127.75 V160" stroke="#8AA0B2" stroke-width="1.25" stroke-opacity="0.85"/>
+    <rect x="924" y="160" width="8" height="26" rx="1" fill="#C4A36A" stroke="none"/>
+    <rect x="1084" y="160" width="8" height="26" rx="1" fill="#C4A36A" stroke="none"/>
+    <circle cx="1008" cy="160" r="6.5" fill="#0E141C" stroke="#F4F0E8" stroke-width="2"/>
+    <rect x="1128" y="108" width="120" height="48" rx="16" fill="#1B2836" stroke="#9ECCC2" stroke-width="1.6"/>
+    <rect x="1146" y="123" width="66" height="5" rx="2.5" fill="#E4C99A" stroke="none"/>
+    <rect x="1146" y="137" width="42" height="5" rx="2.5" fill="#9ECCC2" stroke="none"/>
+    <rect x="1148" y="170" width="100" height="40" rx="14" fill="#15202C" stroke="#C4A36A" stroke-width="1.6"/>
+    <rect x="1164" y="186" width="54" height="5" rx="2.5" fill="#C5D0DA" stroke="none"/>
+    <path d="M820 222 H1260" stroke="#8AA0B2" stroke-width="1.25" stroke-opacity="0.28"/>
+  </g>
+</svg>
