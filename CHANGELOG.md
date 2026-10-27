@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1
+
+Non-breaking. Telegram operations are available as `TelegramBridge` without importing the MCP server.
+
+- `TelegramBridge` and `Settings` are exported from `mcp_telegram_bridge`. Importing them does not import `mcp`.
+- The stdio server is a thin adapter over the same class. Tool names, results, and the `mcp-telegram-bridge` command are unchanged.
+
 ## 0.2.0
 
 Breaking admission change and abuse controls for the stdio bridge.
