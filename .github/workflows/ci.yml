@@ -1,10 +1,26 @@
 name: CI
+
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - "LICENSE"
   pull_request:
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - "LICENSE"
+
+# Documentation-only changes skip this workflow. Do not put secrets in docs.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -12,10 +28,27 @@ jobs:
       matrix:
         python-version: ["3.11", "3.12", "3.13"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9a355c18e # v10.3.2
         with:
+          version: "0.13.6"
           python-version: ${{ matrix.python-version }}
-      - run: python -m pip install --upgrade pip
-      - run: pip install -e ".[dev]"
-      - run: pytest -q
+          enable-cache: true
+      - run: uv sync --frozen --extra dev --python ${{ matrix.python-version }}
+      - run: uv run pytest -q
+      - name: Audit locked dependencies
+        if: matrix.python-version == '3.12'
+        run: |
+          uv export --frozen --extra dev --no-emit-project --format requirements-txt -o /tmp/requirements-audit.txt
+          uv run pip-audit --requirement /tmp/requirements-audit.txt --disable-pip --require-hashes --progress-spinner off
+      - name: Secret scan
+        if: matrix.python-version == '3.12'
+        env:
+          GITLEAKS_VERSION: "8.30.1"
+          GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+        run: |
+          archive="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -fsSL -o "$archive" "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/${archive}"
+          echo "${GITLEAKS_SHA256}  ${archive}" | sha256sum -c -
+          tar -xzf "$archive" gitleaks
+          ./gitleaks detect --source . --no-git --redact --no-banner --exit-code 1

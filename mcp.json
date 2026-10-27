@@ -10,6 +10,7 @@
       "env": {
         "TELEGRAM_BOT_TOKEN": "${TELEGRAM_BOT_TOKEN}",
         "ALLOWED_CHAT_IDS": "${ALLOWED_CHAT_IDS}",
+        "ALLOW_ALL_CHATS": "${ALLOW_ALL_CHATS}",
         "SAFETY_STRICT": "${SAFETY_STRICT}"
       }
     }

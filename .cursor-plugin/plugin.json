@@ -1,7 +1,7 @@
 {
   "name": "mcp-telegram-bridge",
-  "version": "0.1.0",
-  "description": "Controlled stdio MCP bridge to the Telegram Bot API with outbound scrubbing and optional chat allowlisting.",
+  "version": "0.2.0",
+  "description": "Stdio MCP bridge to the Telegram Bot API with outbound scrubbing and fail-closed chat admission.",
   "author": {
     "name": "antonio-castellon"
   },
@@ -27,14 +27,20 @@
       "ALLOWED_CHAT_IDS": {
         "type": "string",
         "title": "Allowed chat IDs",
-        "description": "Optional comma-separated Telegram chat IDs. Leave blank to allow all chats visible to the bot.",
+        "description": "Comma-separated Telegram chat IDs. Empty denies every chat unless ALLOW_ALL_CHATS is enabled.",
+        "default": ""
+      },
+      "ALLOW_ALL_CHATS": {
+        "type": "string",
+        "title": "Allow all chats",
+        "description": "Set to 1, true, yes, or on to permit every chat. Leave unset. Ignored when ALLOWED_CHAT_IDS is set. Startup warns on stderr.",
         "default": ""
       },
       "SAFETY_STRICT": {
         "type": "string",
         "title": "Strict safety mode",
-        "description": "Optional flag; use 1, true, yes, or on to enable strict inbound classification.",
-        "default": ""
+        "description": "Heuristic inbound labels. Default is on. Set to 0, false, no, or off to disable. Not a prompt-injection filter.",
+        "default": "1"
       }
     },
     "required": [
