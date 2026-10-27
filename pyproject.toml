@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mcp-telegram-bridge"
-version = "0.2.0"
+version = "0.2.1"
 description = "Stdio MCP server: controlled Telegram Bot API bridge for any MCP host."
 readme = "README.md"
 license = { text = "MIT" }

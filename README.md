@@ -54,6 +54,35 @@ Cursor or Claude Desktop (`mcp.json` / `claude_desktop_config.json`):
 
 Do not commit a real token. Leave `ALLOW_ALL_CHATS` unset.
 
+## Use as a Python library
+
+The same operations are available without the MCP server. `import mcp_telegram_bridge` loads `TelegramBridge` and `Settings` only. It does not import the `mcp` package. Pass `Settings` directly; `Settings.from_env()` is the default when you want the environment variables above.
+
+```python
+import asyncio
+
+from mcp_telegram_bridge import Settings, TelegramBridge
+
+async def main() -> None:
+    settings = Settings(
+        bot_token="YOUR_BOT_TOKEN_HERE",
+        allowed_chat_ids=frozenset({-1001234567890}),
+    )
+    bridge = TelegramBridge(settings)
+    await bridge.get_me()
+    await bridge.send_message(
+        -1001234567890,
+        "hello",
+        buttons=[{"id": "ack", "label": "Ack"}],
+    )
+    await bridge.get_updates(timeout=0)
+    await bridge.aclose()
+
+asyncio.run(main())
+```
+
+`TelegramBridge(Settings.from_env())` reads `TELEGRAM_BOT_TOKEN`, `ALLOWED_CHAT_IDS`, and the other variables. The CLI still prints access-mode warnings to stderr. Library callers can use `mcp_telegram_bridge.config.emit_startup_warnings` if they want the same lines. The `mcp-telegram-bridge` command is unchanged.
+
 ## Configuration
 
 | Variable | Default | Effect |

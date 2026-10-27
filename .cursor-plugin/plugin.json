@@ -1,6 +1,6 @@
 {
   "name": "mcp-telegram-bridge",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Stdio MCP bridge to the Telegram Bot API with outbound scrubbing and fail-closed chat admission.",
   "author": {
     "name": "antonio-castellon"
