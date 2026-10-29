@@ -100,7 +100,7 @@ Nothing in this process is an audit trail. The host's transcripts are the host's
 
 ## Supply chain
 
-Runtime dependencies are `mcp>=1.30.0,<2` (clears the published MCP CVEs called out for 1.28.1 and 1.30.0, including unbounded Streamable HTTP session retention; this server does not use that transport), `httpx`, and `pydantic`. `uv.lock` records hashes. GitHub Actions are pinned to commit SHAs. Dependabot opens grouped weekly updates for the lockfile and for Actions. CI runs `pip-audit` and gitleaks on non-documentation changes. A docs-only pull request does not run that workflow, so do not paste secrets into Markdown.
+Runtime dependencies are `mcp>=2.3.0,<3` (above the 2.x releases affected by GHSA-84m7-p3x7-pcfv, unbounded Streamable HTTP session retention, fixed in 2.2.0; this server does not use that transport), `httpx`, and `pydantic`. `uv.lock` records hashes. GitHub Actions are pinned to commit SHAs. Dependabot opens grouped weekly updates for the lockfile and for Actions. CI runs `pip-audit` and gitleaks on non-documentation changes. A docs-only pull request does not run that workflow, so do not paste secrets into Markdown.
 
 ## If a token leaks
 

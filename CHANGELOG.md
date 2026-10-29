@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0
+
+Moves the stdio server to MCP Python SDK 2.x. Tool names, arguments, and results are unchanged.
+
+- Requires `mcp>=2.3.0,<3`. The 2.x line replaces `httpx` with `httpx2` inside the SDK and adds `mcp-types` and `opentelemetry-api`. The bridge still declares and uses `httpx` directly.
+- `create_server()` returns an `MCPServer` (formerly `FastMCP`). Code that annotated the return type as `FastMCP` must change the import.
+- The server reports its package version in `serverInfo.version`. SDK 2.x would otherwise send an empty string.
+- `TelegramBridge` and `Settings` still import without the MCP SDK.
+- Dependabot ignores major `mcp` updates. The next major is upgraded in a planned PR.
+
 ## 0.2.1
 
 Non-breaking. Telegram operations are available as `TelegramBridge` without importing the MCP server.

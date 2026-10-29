@@ -9,6 +9,6 @@ from __future__ import annotations
 from .bridge import RateLimitExceeded, TelegramBridge
 from .config import Settings
 
-__version__ = "0.2.1"
+__version__ = "0.3.0"
 
 __all__ = ["RateLimitExceeded", "Settings", "TelegramBridge", "__version__"]

@@ -258,3 +258,16 @@ def test_import_main():
     from mcp_telegram_bridge import __main__ as m
 
     assert callable(m.main)
+
+
+@pytest.mark.asyncio
+async def test_server_info_reports_package_version(tmp_path: Path):
+    from mcp.client import Client
+
+    from mcp_telegram_bridge import __version__
+
+    async with Client(create_server(_settings(tmp_path)), mode="legacy") as client:
+        info = client.server_info
+    assert info is not None
+    assert info.name == "mcp-telegram-bridge"
+    assert info.version == __version__

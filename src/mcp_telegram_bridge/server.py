@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 from pydantic import BaseModel, Field
 
+from . import __version__
 from .bridge import RateLimitExceeded, TelegramBridge
 from .config import Settings, emit_startup_warnings, load_dotenv_if_present
 
@@ -37,15 +38,16 @@ def _button_dicts(buttons: list[ButtonSpec] | None) -> list[dict[str, Any]] | No
     return [b.model_dump() if isinstance(b, BaseModel) else dict(b) for b in buttons]
 
 
-def create_server(settings: Settings | None = None) -> FastMCP:
-    """Build the FastMCP app. Pass ``settings`` or leave it unset to read the environment."""
+def create_server(settings: Settings | None = None) -> MCPServer:
+    """Build the MCPServer app. Pass ``settings`` or leave it unset to read the environment."""
     load_dotenv_if_present()
     cfg = settings or Settings.from_env(require_token=True)
     bridge = TelegramBridge(cfg)
 
-    mcp = FastMCP(
-        name="mcp-telegram-bridge",
+    mcp = MCPServer(
+        "mcp-telegram-bridge",
         instructions=INSTRUCTIONS,
+        version=__version__,
     )
 
     @mcp.tool(
@@ -146,7 +148,7 @@ def create_server(settings: Settings | None = None) -> FastMCP:
     return mcp
 
 
-def list_tool_names(server: FastMCP | None = None) -> list[str]:
+def list_tool_names(server: MCPServer | None = None) -> list[str]:
     """Return registered tool names (for smoke tests without stdio)."""
     app = server or create_server(
         Settings(bot_token="000000000:TEST_TOKEN_PLACEHOLDER_XXXXXXXX", allowed_chat_ids=frozenset())
