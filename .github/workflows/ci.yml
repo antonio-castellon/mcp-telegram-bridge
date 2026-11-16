@@ -2,16 +2,8 @@ name: CI
 
 on:
   push:
-    branches: [main]
-    paths-ignore:
-      - "**/*.md"
-      - "docs/**"
-      - "LICENSE"
-  pull_request:
-    paths-ignore:
-      - "**/*.md"
-      - "docs/**"
-      - "LICENSE"
+    tags: ['v*']
+  workflow_dispatch:
 
 # Documentation-only changes skip this workflow. Do not put secrets in docs.
 concurrency:
